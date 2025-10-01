@@ -1,157 +1,156 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Neil's JSON → Excel Converter (Green Theme)</title>
   <style>
-    :root {
-      --green-900: #064e3b;
-      --green-800: #065f46;
-      --green-700: #047857;
-      --green-600: #059669;
-      --green-500: #10b981;
-      --green-400: #34d399;
-      --green-300: #6ee7b7;
-      --green-100: #d1fae5;
-      --green-050: #ecfdf5;
-      --ink: #0b1720;
-      --muted: #2a3a33;
-      --border: #b7e5d2;
-      --error: #b91c1c;
+    :root{
+      --green-900:#064e3b; /* headings */
+      --green-800:#065f46;
+      --green-700:#047857; /* accents */
+      --green-600:#059669; /* primary */
+      --green-500:#10b981; /* buttons */
+      --green-400:#34d399; /* hover */
+      --green-300:#6ee7b7; /* subtle */
+      --green-100:#d1fae5; /* bg tint */
+      --green-050:#ecfdf5; /* panel */
+      --ink:#0b1720;
+      --muted:#2a3a33;
+      --border:#b7e5d2;
+      --error:#b91c1c;
     }
-    html, body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial;
-      background: var(--green-050);
-      color: var(--ink);
-    }
-    header { position: sticky; top: 0; z-index: 3; background: linear-gradient(180deg, var(--green-600), var(--green-700)); color: white; padding: 14px 18px; box-shadow: 0 4px 16px rgba(0, 0, 0, .12); }
-    header h1 { margin: 0; font-size: 1.2rem; letter-spacing: .3px }
-    header p { margin: .25rem 0 0; opacity: .9; font-size: .9rem }
-    main.container { max-width: 1100px; margin: 18px auto; padding: 0 14px; }
-    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; }
-    @media (max-width: 980px) { .grid { grid-template-columns: 1fr } }
-    .card { background: white; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 6px 18px rgba(5, 150, 105, .10) }
-    .card h2 { margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--green-050); color: var(--green-900); font-size: 1rem }
-    .card .body { padding: 14px }
-    .uploader { display: flex; align-items: center; gap: 10px; flex-wrap: wrap }
-    .uploader input[type=file] { border: 1px dashed var(--green-400); padding: 10px; border-radius: 10px; background: var(--green-050) }
-    .help { font-size: .9rem; color: var(--muted); }
-    .tree { max-height: 360px; overflow: auto; border: 1px solid var(--border); border-radius: 12px; padding: 10px; background: linear-gradient(180deg, white, var(--green-050)) }
-    .tree-search { margin-bottom: 8px }
-    .tree-search input { width: 100%; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--border); }
-    .node { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 8px }
-    .node:hover { background: var(--green-100) }
-    .indent { width: 12px; flex: 0 0 12px }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px }
-    .chip { background: var(--green-600); color: white; padding: 6px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 6px 10px rgba(16,185,129,.22) }
-    .chip .x { cursor: pointer; background: rgba(255,255,255,.2); padding: 0 6px; border-radius: 999px; }
-    .btn { cursor: pointer; border: 0; border-radius: 10px; padding: 10px 14px; background: var(--green-600); color: white; font-weight: 600; box-shadow: 0 6px 14px rgba(5,150,105,.25); transition: .15s }
-    .btn:hover, .btn:focus-visible { background: var(--green-500); outline: 2px solid var(--green-800); outline-offset: 2px;}
-    .btn.secondary { background: white; color: var(--green-800); border: 1px solid var(--green-400); box-shadow: none }
-    .btn.ghost { background: transparent; color: var(--green-700); border: 1px dashed var(--green-400); box-shadow: none }
-    .btnbar { display: flex; flex-wrap: wrap; gap: 10px }
-    table { width: 100%; border-collapse: separate; border-spacing: 0 6px }
-    thead th { position: sticky; top: 0; background: var(--green-600); color: white; padding: 10px; border: 0 }
-    tbody td { background: white; border: 1px solid var(--border); padding: 8px }
-    .error { color: white; background: var(--error); padding: 8px 10px; border-radius: 10px; margin: 8px 0; }
-    details { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: linear-gradient(180deg, white, var(--green-050)); }
-    details > summary { cursor: pointer; font-weight: 600; color: var(--green-800) }
-    .stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px }
-    @media (max-width: 700px) { .stats { grid-template-columns: 1fr } }
-    .stat { border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: white }
-    .kbd { font-family: ui-monospace, SFMono, Menlo, Consolas, monospace; background: var(--green-100); padding: 2px 6px; border-radius: 6px }
-    .small { font-size: .85rem; color: var(--muted) }
-    .visually-hidden {
-      border: 0 !important; clip: rect(0,0,0,0) !important; height: 1px !important;
-      margin: -1px !important; overflow: hidden !important; padding: 0 !important;
-      position: absolute !important; width: 1px !important; white-space: nowrap !important;
-    }
+    html,body{margin:0;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:var(--green-050); color:var(--ink)}
+    header{position:sticky;top:0;z-index:3;background:linear-gradient(180deg,var(--green-600),var(--green-700));color:white;padding:14px 18px;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+    header h1{margin:0;font-size:1.2rem;letter-spacing:.3px}
+    header p{margin:.25rem 0 0;opacity:.9;font-size:.9rem}.container{max-width:1100px;margin:18px auto;padding:0 14px;}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
+
+.card{background:white;border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 18px rgba(5,150,105,.10)}
+.card h2{margin:0;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--green-050);color:var(--green-900);font-size:1rem}
+.card .body{padding:14px}
+
+.uploader{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.uploader input[type=file]{border:1px dashed var(--green-400);padding:10px;border-radius:10px;background:var(--green-050)}
+
+.help{font-size:.9rem;color:var(--muted);}
+
+.tree{max-height:360px;overflow:auto;border:1px solid var(--border);border-radius:12px;padding:10px;background:linear-gradient(180deg,white,var(--green-050))}
+.tree-search{margin-bottom:8px}
+.tree-search input{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--border);}
+.node{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px}
+.node:hover{background:var(--green-100)}
+.indent{width:12px;flex:0 0 12px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--green-600);color:white;padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 10px rgba(16,185,129,.22)}
+.chip .x{cursor:pointer;background:rgba(255,255,255,.2);padding:0 6px;border-radius:999px}
+
+.btn{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--green-600);color:white;font-weight:600;box-shadow:0 6px 14px rgba(5,150,105,.25);transition:.15s}
+.btn:hover{background:var(--green-500)}
+.btn.secondary{background:white;color:var(--green-800);border:1px solid var(--green-400);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--green-700);border:1px dashed var(--green-400);box-shadow:none}
+.btnbar{display:flex;flex-wrap:wrap;gap:10px}
+
+table{width:100%;border-collapse:separate;border-spacing:0 6px}
+thead th{position:sticky;top:0;background:var(--green-600);color:white;padding:10px;border:0}
+tbody td{background:white;border:1px solid var(--border);padding:8px}
+
+.error{color:white;background:var(--error);padding:8px 10px;border-radius:10px;margin:8px 0}
+
+details{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:linear-gradient(180deg,white,var(--green-050));}
+details>summary{cursor:pointer;font-weight:600;color:var(--green-800)}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width:700px){.stats{grid-template-columns:1fr}}
+.stat{border:1px solid var(--border);border-radius:10px;padding:10px;background:white}
+.kbd{font-family:ui-monospace,SFMono,Menlo,Consolas,monospace;background:var(--green-100);padding:2px 6px;border-radius:6px}
+.small{font-size:.85rem;color:var(--muted)}
+
   </style>
 </head>
 <body>
   <header>
     <h1>Neil's JSON → Excel Converter</h1>
     <p>Upload JSON, pick nested fields, preview, download to Excel, and see stats — all in one green, friendly page.</p>
-    <div>
-      <a href="j2e.html"> J2E v2 </a>
-    </div>
-  </header>
-  <main class="container">
+  </header>  <div class="container">
     <div class="grid">
       <section class="card">
         <h2>1) Upload & Inspect</h2>
         <div class="body">
           <div class="uploader">
-            <input id="fileInput" type="file" accept="application/json,.json" aria-label="Upload JSON file" />
+            <input id="fileInput" type="file" accept="application/json,.json" />
             <button class="btn ghost" id="loadSample1">Load Sample: Flat</button>
             <button class="btn ghost" id="loadSample2">Load Sample: Nested</button>
             <button class="btn ghost" id="loadSample3">Load Sample: Deep</button>
           </div>
           <p class="help">Tip: Works with objects or arrays. We'll discover all leaf field paths (arrays shown as <span class="kbd">[*]</span>).</p>
-          <div id="err" class="error" style="display:none"></div>
-          <details id="fieldsBox" style="margin-top:10px" open>
-            <summary>Discovered Fields (click to add)</summary>
-            <div class="tree-search">
-              <label for="search" class="visually-hidden">Filter fields</label>
-              <input id="search" type="search" placeholder="Filter fields… (e.g. user.address[*].city)" aria-label="Filter field paths" />
-            </div>
-            <div id="tree" class="tree" aria-live="polite"></div>
-          </details>
-          <div style="margin-top:10px">
-            <strong>Selected fields</strong>
-            <div id="chips" class="chips" style="margin-top:8px"></div>
-          </div>
+          <div id="err" class="error" style="display:none"></div><details id="fieldsBox" style="margin-top:10px" open>
+        <summary>Discovered Fields (click to add)</summary>
+        <div class="tree-search">
+          <input id="search" type="search" placeholder="Filter fields… (e.g. user.address[*].city)" />
         </div>
-      </section>
-      <section class="card">
-        <h2>2) Actions</h2>
-        <div class="body">
-          <div class="btnbar" style="margin-bottom:12px">
-            <button class="btn" id="previewBtn">Preview Table</button>
-            <button class="btn secondary" id="statsBtn">Stats</button>
-            <button class="btn" id="downloadXlsBtn">Download Excel (.xls)</button>
-            <button class="btn secondary" id="downloadCsvBtn">Download CSV</button>
-          </div>
-          <p class="small">Excel download uses a standards-friendly HTML table with <code>.xls</code> extension that opens in Excel, Numbers, and Google Sheets. CSV is also available.</p>
-        </div>
-      </section>
+        <div id="tree" class="tree" aria-live="polite"></div>
+      </details>
+
+      <div style="margin-top:10px">
+        <strong>Selected fields</strong>
+        <div id="chips" class="chips" style="margin-top:8px"></div>
+      </div>
     </div>
-    <section class="card" style="margin-top:16px">
-      <h2>3) Preview</h2>
-      <div class="body">
-        <div id="preview" style="overflow:auto; max-height:420px"></div>
+  </section>
+
+  <section class="card">
+    <h2>2) Actions</h2>
+    <div class="body">
+      <div class="btnbar" style="margin-bottom:12px">
+        <button class="btn" id="previewBtn">Preview Table</button>
+        <button class="btn secondary" id="statsBtn">Stats</button>
+        <button class="btn" id="downloadXlsBtn">Download Excel (.xls)</button>
+        <button class="btn secondary" id="downloadCsvBtn">Download CSV</button>
       </div>
-    </section>
-    <section class="card" style="margin-top:16px">
-      <h2>4) Stats</h2>
-      <div class="body">
-        <div id="stats" class="stats"></div>
-      </div>
-    </section>
-    <section class="card" style="margin-top:16px">
-      <h2>How to Run & Test Locally</h2>
-      <div class="body">
-        <ol>
-          <li>Save this page as <span class="kbd">json-to-excel.html</span>.</li>
-          <li>Double-click to open it in any modern browser (Chrome, Edge, Firefox, Safari).</li>
-          <li>Click a sample button or upload your own <span class="kbd">.json</span> file.</li>
-          <li>Pick fields, then use <em>Preview</em>, <em>Stats</em>, and <em>Download</em>.</li>
-        </ol>
-        <p class="small">No servers, libraries, or frameworks required. Everything runs in your browser.</p>
-      </div>
-    </section>
-  </main>
-  <script>
+      <p class="small">Excel download uses a standards-friendly HTML table with <code>.xls</code> extension that opens in Excel, Numbers, and Google Sheets. CSV is also available.</p>
+    </div>
+  </section>
+</div>
+
+<section class="card" style="margin-top:16px">
+  <h2>3) Preview</h2>
+  <div class="body">
+    <div id="preview" style="overflow:auto; max-height:420px"></div>
+  </div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>4) Stats</h2>
+  <div class="body">
+    <div id="stats" class="stats"></div>
+  </div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>How to Run & Test Locally</h2>
+  <div class="body">
+    <ol>
+      <li>Save this page as <span class="kbd">json-to-excel.html</span>.</li>
+      <li>Double-click to open it in any modern browser (Chrome, Edge, Firefox, Safari).</li>
+      <li>Click a sample button or upload your own <span class="kbd">.json</span> file.</li>
+      <li>Pick fields, then use <em>Preview</em>, <em>Stats</em>, and <em>Download</em>.</li>
+    </ol>
+    <p class="small">No servers, libraries, or frameworks required. Everything runs in your browser.</p>
+  </div>
+</section>
+
+  </div>  <script>
     // ------------------------------ Utilities ------------------------------
     const $ = sel => document.querySelector(sel);
     const errBox = $('#err');
     function showErr(msg){ errBox.style.display='block'; errBox.textContent = msg }
     function clearErr(){ errBox.style.display='none'; errBox.textContent = '' }
+
     function isObject(v){ return v && typeof v === 'object' && !Array.isArray(v) }
 
-    // Walk JSON and collect leaf paths. Arrays indices normalized to [*]
+    // Walk JSON and collect leaf paths. Arrays indices are normalized to [*]
     function collectLeafPaths(node, path=[]) {
       const paths = [];
       const helper = (n, p) => {
@@ -178,6 +177,7 @@
       const out = [];
       const dive = (node, idx) => {
         if (idx === segs.length){
+          // reached leaf
           if (node === undefined) return;
           if (isObject(node) || Array.isArray(node)) out.push(JSON.stringify(node));
           else out.push(node);
@@ -196,6 +196,8 @@
             dive(node[seg], idx+1);
           } else if (Array.isArray(node)){
             node.forEach(item => dive(item && item[seg], idx+1));
+          } else {
+            // primitive: cannot go deeper
           }
         }
       }
@@ -246,18 +248,13 @@
         const depth = path.split('.').length;
         const div = document.createElement('div');
         div.className = 'node';
-        for (let i=1;i<depth;i++){
-          const ind=document.createElement('span');
-          ind.className='indent'; div.appendChild(ind);
-        }
+        // Indent visually
+        for (let i=1;i<depth;i++){ const ind=document.createElement('span'); ind.className='indent'; div.appendChild(ind) }
         const btn = document.createElement('button');
         btn.className = 'btn secondary';
         btn.textContent = SELECTED.has(path) ? 'Added' : 'Add';
         btn.disabled = SELECTED.has(path);
-        btn.style.padding='4px 8px';
-        btn.style.fontSize='.85rem';
-        btn.tabIndex = 0;
-        btn.setAttribute('aria-label', SELECTED.has(path) ? 'Field already added' : `Add field ${path}`);
+        btn.style.padding='4px 8px'; btn.style.fontSize='.85rem';
         btn.addEventListener('click',()=>{ SELECTED.add(path); renderChips(); renderTree(); });
         const label = document.createElement('span');
         label.textContent = path;
@@ -276,18 +273,10 @@
       for (const p of SELECTED){
         const chip = document.createElement('span'); chip.className='chip';
         chip.innerHTML = `<span>${p}</span>`;
-        const x = document.createElement('span');
-        x.className = 'x';
-        x.textContent = '✕';
-        x.title = 'Remove field';
-        x.setAttribute('aria-label','Remove field');
-        x.setAttribute('role','button');
-        x.tabIndex = 0;
-        x.addEventListener('click',()=>{ SELECTED.delete(p); renderChips(); renderTree(); updateOnSelectionChange(); });
-        x.addEventListener('keydown', (e)=> { if(e.key==='Enter' || e.key===' ') { SELECTED.delete(p); renderChips(); renderTree(); updateOnSelectionChange(); }});
+        const x = document.createElement('span'); x.className='x'; x.textContent='✕'; x.title='Remove';
+        x.addEventListener('click',()=>{ SELECTED.delete(p); renderChips(); renderTree(); });
         chip.appendChild(x); c.appendChild(chip);
       }
-      updateOnSelectionChange();
     }
 
     function buildTableData(){
@@ -343,14 +332,9 @@
       } catch(e){ showErr(e.message) }
     }
 
-    // Auto-update preview and stats on selection change
-    function updateOnSelectionChange(){
-      renderPreview();
-      renderStats();
-    }
-
     // ------------------------------ Event wiring ------------------------------
     $('#search').addEventListener('input', renderTree);
+
     $('#previewBtn').addEventListener('click', renderPreview);
     $('#statsBtn').addEventListener('click', renderStats);
 
@@ -361,7 +345,7 @@
         const csv = toCSV([headers, ...rows]);
         download('extracted.csv', 'text/csv;charset=utf-8', csv);
       } catch(e){ showErr(e.message) }
-    });
+    })
 
     $('#downloadXlsBtn').addEventListener('click', ()=>{
       try{
@@ -370,7 +354,7 @@
         const html = buildHtmlTable(headers, rows);
         download('extracted.xls', 'application/vnd.ms-excel', html);
       } catch(e){ showErr(e.message) }
-    });
+    })
 
     $('#fileInput').addEventListener('change', async (e)=>{
       const f = e.target.files?.[0];
@@ -385,7 +369,7 @@
         renderTree(); renderChips();
         $('#preview').innerHTML=''; $('#stats').innerHTML='';
       } catch(err){ showErr('Failed to parse JSON: '+ err.message) }
-    });
+    })
 
     // ------------------------------ Samples ------------------------------
     const SAMPLE_FLAT = [
@@ -426,6 +410,5 @@
 
     // Initial UI state
     renderChips();
-  </script>
-</body>
+  </script></body>
 </html>
